@@ -79,7 +79,6 @@ find_chromeos_partitions() {
 }
 
 find_all_partitions() {
-  echo "$(find_chromeos_partitions)"
   echo "$(find_rootfs_partitions)"
 }
 
@@ -390,10 +389,14 @@ main() {
 
   while true; do
     clear
-    print_selector "${valid_partitions}"
+    if (({#valid_partitions[@]} > 1)); then
+      print_selector "${valid_partitions}"
 
-    if get_selection "${valid_partitions}"; then
-      break
+      if get_selection "${valid_partitions}"; then
+        break
+      fi
+    else
+      boot_target ${(echo ${valid_partitions[0]} | cut -d ":" -f 1)}
     fi
   done
 }
